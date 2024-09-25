@@ -24,16 +24,3 @@ data class News(
 ) {
     val rating: Double by lazy { 1.0 / (1 + Math.exp(-(favoritesCount / (commentsCount + 1).toDouble()))) }
 }
-
-@Serializable
-data class Place(
-    val id: Int,
-    val title: String,
-    val slug: String,
-    val address: String,
-    @SerialName("site_url")
-    val siteUrl: String,
-    @SerialName("is_closed")
-    val isClosed: Boolean,
-    val location: String
-)

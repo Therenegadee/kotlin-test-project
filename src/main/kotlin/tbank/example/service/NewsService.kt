@@ -3,18 +3,20 @@ package tbank.example.service
 import org.jetbrains.annotations.Nullable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import tbank.example.dsl.printNews
 import tbank.example.dto.News
 import java.io.File
 import java.time.LocalDate
 
-var log: Logger = LoggerFactory.getLogger("NewsService")
+private val log: Logger = LoggerFactory.getLogger("NewsService")
 
 suspend fun main() {
     val startPeriod: LocalDate = LocalDate.now().minusYears(10)
     val endPeriod: LocalDate = LocalDate.now()
     val period: ClosedRange<LocalDate> = startPeriod..endPeriod
     val news: List<News>? = fetchMostRatedNews(100, period)
-    val file: File? = news?.let { convertPojoToCsvFile(it, "news-kudago-${period}") }
+    val file: File? = news?.let { convertNewsToCsvFile(it, "news-kudago-${period}") }
+    news?.let(::printNews)
 }
 
 @Nullable
