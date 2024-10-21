@@ -10,15 +10,6 @@ import java.time.LocalDate
 
 private val log: Logger = LoggerFactory.getLogger("NewsService")
 
-suspend fun main() {
-    val startPeriod: LocalDate = LocalDate.now().minusYears(10)
-    val endPeriod: LocalDate = LocalDate.now()
-    val period: ClosedRange<LocalDate> = startPeriod..endPeriod
-    val news: List<News>? = fetchMostRatedNews(100, period)
-    val file: File? = news?.let { convertNewsToCsvFile(it, "news-kudago-${period}") }
-    news?.let(::printNews)
-}
-
 @Nullable
 suspend fun fetchMostRatedNews(count: Int, period: ClosedRange<LocalDate>): List<News>? {
     log.info("Начало получения новостей из сервиса KudaGo, отсортированных по рейтингу. Входные параметры: кол-во новостей - ${count}, период - ${period}.")

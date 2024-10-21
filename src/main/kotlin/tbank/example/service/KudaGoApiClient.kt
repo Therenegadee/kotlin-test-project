@@ -6,7 +6,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
-import io.ktor.serialization.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.*
 import org.slf4j.LoggerFactory
@@ -17,7 +16,7 @@ const val kudaGoApiUrl: String = "https://kudago.com/public-api/v1.4/news"
 private val log = LoggerFactory.getLogger("KudaGoApiClient")
 
 @Throws(SerializationException::class, IllegalArgumentException::class)
-suspend fun fetchNewsData(newsCount: Int): List<News> {
+suspend fun fetchNewsData(newsCount: Int, page: Int = 1): List<News> {
     log.debug("Начало получения новостей из сервиса KudaGo. Входной пользовательский параметр кол-во новостей: ${newsCount}.")
     val client = HttpClient(CIO) {
         install(Logging) {
@@ -42,7 +41,11 @@ suspend fun fetchNewsData(newsCount: Int): List<News> {
                 "Произошла ошибка при попытке извлечения новостей из API KudaGo. Ожидаемый ответ: ${HttpStatusCode.OK}." +
                         "Полученный ответ: ${response.status}. Ответ от сервиса: ${response.bodyAsText()}."
             log.error(errorMessage)
-            throw IllegalArgumentException(errorMessage)
+//            throw IllegalArgumentException(errorMessage)
+            return emptyList()
+        } else if (!response.contentType()?.equals(ContentType.Application.Json)!! ?:true) {
+            log.warn("Ответ сервиса KudaGo содержал не JSON формат ответа, а ${response.contentType()}. Статус ответа: ${response.status}")
+            return emptyList()
         }
         val json = Json {
             ignoreUnknownKeys = true
